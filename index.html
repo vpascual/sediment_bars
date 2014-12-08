@@ -102,7 +102,7 @@ function createValues(obj) {
       .style("fill", function(d) { return color(obj.id);})    
     .transition()
       .duration(1000)
-      .attr("cx", function(d) { return x(obj.id); })
+      .attr("cx", function(d) { return x(obj.value) - 2; })
       .attr("cy", function(d) { return y(obj.id) + y.rangeBand()/2; })
       // .ease("linear")
       // .ease("cubic")
@@ -111,6 +111,10 @@ function createValues(obj) {
       // .ease("elastic")
       // .attr("r", 1)
       // .each("end", function() { nodes.splice(3, 1); })
+    .transition()
+      .duration(1000)
+      .attr('r', 0.5)
+      .attr("cx", function(d) { return x(obj.value); })
       .remove();
     // }
 
