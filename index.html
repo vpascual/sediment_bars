@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.area {
+  fill: steelblue;
+}
+
+</style>
+<body>
+  
+  <div id="vis">
+  </id>
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script>
+
+var margin = {top: 20, right: 20, bottom: 30, left: 50},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var nodes = [],
+    totalNodes = 0,
+    totalNodesType1 = 0,
+    totalNodesType2 = 0,
+    barWidth = 50,
+    barHeight = 100,
+    color = d3.scale.category10().domain([1, 2, 4]),
+    y = d3.scale.linear()
+                .range([0, barHeight])
+                .domain([0, totalNodesType1]),
+    pos1 = 
+    {
+      x: width / 2 - barWidth - barWidth/2,
+      y: height - barHeight
+    }
+    pos2 = 
+    {
+      x: width / 2 + barWidth,
+      y: height - barHeight
+    };  
+
+var force = d3.layout.force()
+    .gravity(0.06)
+    .charge(-150)
+    // .linkDistance(40)
+    .size([width, height]);
+
+var svg = d3.select("#vis").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var p0;
+
+svg.append("svg:rect")
+    .attr("width", width)
+    .attr("height", height)
+    .style("stroke", "#000")
+    .style('fill', 'white');
+
+var circles = svg.selectAll("#hola")
+    .data([0, 0])
+    .enter()
+    .append("circle")
+      .attr("cx", function(d, i) { return width/2 - 25 + 50*i })
+      .attr("cy", 100)
+      .attr("r", 25)
+      .style("fill", function(d, i) {
+        return color(i);
+      })
+      .on("mouseover", createValues)
+      .on("mousemove", createValues);
+
+function createValues(d, i) {
+        var p1 = d3.mouse(this),
+        node = {x: p1[0], y: p1[1], px: (p0 || (p0 = p1))[0], py: p0[1]};
+
+        totalNodes++;
+        y.domain([0, totalNodes]);  
+        if (i == 0) {
+          node.type = 0;
+          totalNodesType1++;          
+        } else {
+          node.type = 1;
+          totalNodesType2++;          
+        }
+
+        barFill1.attr("height", function(d) { return y(totalNodesType1); })
+        barFill1.attr("y", function(d) { return barHeight - y(totalNodesType1); })  
+        barFill2.attr("height", function(d) { return y(totalNodesType2); })
+        barFill2.attr("y", function(d) { return barHeight - y(totalNodesType2); })
+
+        var circle = svg.append("svg:circle")
+          .data([node])
+          .attr("cx", function(d) { return d.x; })
+          .attr("cy", function(d) { return d.y; })
+          .attr("r", 5)
+          .style("fill", function(d) {
+            return color(d.type);
+          })    
+        .transition()
+          .duration(500)
+          .attr("cx", function(d) {
+            var offset = Math.random() * barWidth;
+            return (node.type == 0) ? pos1.x + offset : pos2.x + offset;
+          })
+          .attr("cy", function(d) { 
+            return pos1.y; 
+          })
+          .attr("r", 1)
+          .each("end", function() { nodes.splice(3, 1); })
+          .remove();
+      }
+
+var bar1 = svg.append("g")        
+        .attr("transform", function(d) { return "translate(" + pos1.x + "," + pos1.y + ")"; });
+
+var bar2 = svg.append("g")        
+        .attr("transform", function(d) { return "translate(" + pos2.x + "," + pos2.y + ")"; });
+
+var barRect1 = bar1.append("rect")
+    .attr("width", barWidth)
+    .attr("height", barHeight)
+    .style("stroke", "#222")
+    .style('fill', 'white');
+
+var barRect2 = bar2.append("rect")
+    .attr("width", barWidth)
+    .attr("height", barHeight)
+    .style("stroke", "#222")
+    .style('fill', 'white');
+
+var barFill1 = bar1.append("rect")
+    .attr("y", function(d) { return y(0); })
+    .attr("width", barWidth - 1)
+    .style('fill', color(0));
+
+var barFill2 = bar2.append("rect")
+    .attr("y", function(d) { return y(0); })
+    .attr("width", barWidth - 1)
+    .style("fill", color(1));
+
+// force.on("tick", function(e) {
+
+// });
+</script>
