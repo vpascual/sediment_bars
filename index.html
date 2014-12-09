@@ -19,11 +19,13 @@ body {
 
 </style>
 <body>
-  
+  <h2>Un día en el mundo</h2>
   <div id="vis">
   </id>
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script>
+
+var transitionDuration = 6000;
 
 var margin = {top: 0, right: 20, bottom: 0, left: 50},
     width = 960 - margin.left - margin.right,
@@ -101,10 +103,10 @@ function createValues(obj) {
       .attr("r", 5)
       .style("fill", function(d) { return color(obj.id);})    
     .transition()
-      .duration(1000)
+      .duration(transitionDuration)
       .attr("cx", function(d) { return x(obj.value) - 2; })
       .attr("cy", function(d) { return y(obj.id) + y.rangeBand()/2; })
-      // .ease("linear")
+      .ease("linear")
       // .ease("cubic")
       // .ease("circle")
       // .ease("back")
@@ -112,15 +114,15 @@ function createValues(obj) {
       // .attr("r", 1)
       // .each("end", function() { nodes.splice(3, 1); })
     .transition()
-      .duration(1000)
+      .duration(transitionDuration)
       .attr('r', 0.5)
       .attr("cx", function(d) { return x(obj.value); })
       .remove();
     // }
 
     var bar = svg.selectAll(".bar").filter(function(d) { return d.id == obj.id; });
-    bar.transition().duration(1000)
-      .attr("width", function(d) { return width-x(d.value)})
+    // bar.transition().duration(200)
+    bar.attr("width", function(d) { return width-x(d.value)})
       .attr('x', function(d) { return x(d.value)})
   }
 
